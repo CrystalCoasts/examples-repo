@@ -1,2 +1,7 @@
-# examples-repo
-This is just a repo which will contain some examples for setting up and testing the environment
+# SeniorDesign
+
+vscode requirements:
+install platformIO.
+Open platform IO project, located cloned repo.
+
+
