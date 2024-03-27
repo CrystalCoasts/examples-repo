@@ -1,29 +1,18 @@
 #include <Arduino.h>
-#include "Wire.h"
+// #include "Wire.h"
 
-#include <LiquidCrystal_I2C.h>
+// #include <LiquidCrystal_I2C.h>
 #include "dht.h"
 
 #define DHTPIN 14  // Set the pin connected to the DHT11 data pin
 #define DHTTYPE DHT11 // DHT 11 
 
 DHT dht(DHTPIN, DHTTYPE);
-LiquidCrystal_I2C lcd(0x27,16,2); 
 
 void setup() {
-
-  // Begin serial communication at 115200 baud
   Serial.begin(115200);
-
-  // Initialize the dht11
+  Serial.println("DHT11 test!");
   dht.begin();
-
-  // Initialize the LCD
-  lcd.init();
-  lcd.backlight();
-
-  // Clear the LCD
-  lcd.clear();
 }
 
 void loop() {
@@ -41,16 +30,11 @@ void loop() {
     Serial.println("Failed to read from DHT sensor!");
     return;
   }
-
-  // Display temperature and humidity on the LCD
-  lcd.setCursor(0, 0);
-  lcd.print("Temp: ");
-  lcd.print(temperature);
-  lcd.write(223);  // Degree symbol
-  lcd.print("C");
-
-  lcd.setCursor(0, 1);
-  lcd.print("Humi: ");
-  lcd.print(humidity);
-  lcd.print("%");
+  // Print the humidity and temperature
+  Serial.print("Humidity: "); 
+  Serial.print(humidity);
+  Serial.print(" %\t");
+  Serial.print("Temperature: "); 
+  Serial.print(temperature);
+  Serial.println(" *C");
 }
