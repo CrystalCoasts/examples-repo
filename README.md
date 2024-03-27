@@ -35,16 +35,16 @@ If you want to try something new and require a new library you will need to add 
     * Click add
 
 2. Editing directly the plaformio.ini
-If you know the name of the library you require, you only need to add it to the file like follow:
-lib_deps = 
-    lib1
-    lib2
-    ...
-    libn
+If you know the name of the library you require, you only need to add it to the file like follow: <br />
+lib_deps = <br />
+    &emsp;&emsp;lib1<br />
+   &emsp;&emsp;lib2<br />
+   &emsp;&emsp;...<br />
+   &emsp;&emsp;libn<br />
 
 
-example:
-lib_deps = 
-	adafruit/DHT sensor library@^1.4.6
-	adafruit/Adafruit Unified Sensor@^1.1.14
+example:<br />
+lib_deps = <br />
+	&emsp;&emsp;adafruit/DHT sensor library@^1.4.6<br />
+	&emsp;&emsp;adafruit/Adafruit Unified Sensor@^1.1.14<br />
 
