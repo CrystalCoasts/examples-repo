@@ -6,6 +6,8 @@
 * Python.
 * c/c++ build tools (all of the microsoft ones).
 
+if you have python you can install the others by running the python script 'install_vscode_extension.py' from the vscode terminal. (still testing :) )
+
 --optional:
 * cmake (we don't needed it for our project (platformIO takes care of everything), but if you want to use vscode for c/c++ dev in general you would need it).
 
