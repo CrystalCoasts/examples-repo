@@ -404,18 +404,14 @@ bool Cellular::serverConnect(const char* server, const char* resource)  {
     sim.sendData("AT+CMEE=2");                //checks signal quality
     sim.sendData("AT+CCLK?");       //gets time of day
     sim.sendData("AT+CSSLCFG=\"sslversion\",1,3");      //sets SSL version as 3
-    sim.sendData("AT+CSSLCFG=\"sni\",1,seawall.fiu.edu");     //sets up config to connnect to domain
-    //sim.sendData("AT+CSSLCFG=\"ciphersuite\",1,0,0xC02B");     //sets up config to connnect to domain   
-    // sim.sendData("AT+CSSLCFG=\"ciphersuite\",0,1,0xc02c");
-    // sim.sendData("AT+CSSLCFG=\"ciphersuite\",0,2,0xcca9");
-    //sim.sendData("AT+CSSLCFG=\"ctxindex\",0");          //sets up config to connnect to domain
+    sim.sendData("AT+CSSLCFG=\"sni\",1," + String(server));     //sets up config to connnect to domain
     sim.sendData("AT+SHSSL=1,\"\"");                    //sets certificate as automatic
     sim.sendData("AT+SHSSL?");                   
     sim.sendData("AT+SHCONF=\"BODYLEN\",1024");         //body length 1000 bytes
     sim.sendData("AT+SHCONF=\"HEADERLEN\",350");        //header length 350 bytes
     String s = String(server);
     s = "\"" + s + "\"";
-    sim.sendData("AT+SHCONF=\"URL\"," + String(server));        //domain config set up
+    sim.sendData("AT+SHCONF=\"URL\",https://" + String(server));        //domain config set up
     sim.sendData("AT+CSSLCFG=?");
     if(sendData("AT+SHCONN").find("ERROR") != std::string::npos)  {     //attempts to connect to domain
         Serial.println("Error found! Could not connnect!");
@@ -425,7 +421,6 @@ bool Cellular::serverConnect(const char* server, const char* resource)  {
     Serial.println("Successfully connected to " + String(server));
     sim.connected = true;
     return true;
-
 }
 
 bool Cellular::setJsonHeader()  {
@@ -438,13 +433,65 @@ bool Cellular::setJsonHeader()  {
         sim.sendData("AT+SHAHEAD=\"Cache-control\", \"no-cache\"");             //no cache
         sim.sendData("AT+SHAHEAD=\"Connection\", \"keep-alive\"");              //doesnt let connection die
         sim.sendData("AT+SHAHEAD=\"Accept\", \"*/*\"");                         //Accept any type of data
+        sim.sendData("AT+SHAHEAD=\"Authorization\", \"Bearer f0fa3eaa-7ffd-43b9-8834-4fdddcd1bc95\"");     //Accept any type of data
         //sim.sendData("AT+SHAHEAD=\"Authoriation\", bearer {token} )
         return true;
     }
     
 }
 
-bool Cellular::sendPostRequest(String jsonPayload) {
+bool Cellular::setJsonHeaderPhoto() {
+    if(!sim.IsServerConnected()) {
+        Serial.println("Server not connected.");
+    }else   {
+        sim.sendData("AT+SHCHEAD");     //clears head
+        sim.sendData("AT+SHAHEAD=\"Content-Type\", \"jpeg\"");      //sets json type
+        sim.sendData("AT+SHAHEAD=\"Content-Transfer-Encoding\",\"BASE64\"");              //sets curl as user
+        sim.sendData("AT+SHAHEAD=\"User-Agent\",\"curl/7.47.0\"");              //sets curl as user
+        sim.sendData("AT+SHAHEAD=\"Cache-control\", \"no-cache\"");             //no cache
+        sim.sendData("AT+SHAHEAD=\"Connection\", \"keep-alive\"");              //doesnt let connection die
+        sim.sendData("AT+SHAHEAD=\"Accept\", \"*/*\"");                         //Accept any type of data
+        sim.sendData("AT+SHAHEAD=\"Authorization\", \"Bearer f0fa3eaa-7ffd-43b9-8834-4fdddcd1bc95\"");     //Accept any type of data
+        return true;
+    }
+}
+
+bool Cellular::sendPhotoPost(String jsonPayload, String resource) {
+    int jsonLength = jsonPayload.length();  //gets length for sending data
+    
+    //Sets escape characters for the 
+    jsonPayload.replace("\"", "\\\"");
+    jsonPayload = "\"" + jsonPayload + "\""; 
+    Serial.println("working for now");
+
+    int i=0,j=0;
+    while(i < jsonLength) {
+      char buffer[990] = ""; // Buffer to hold Base64 string
+      while(i+j < jsonLength && j < 990) {
+        buffer[j] += jsonPayload[i+j];
+        j++;
+      }
+      if(i == 0)    {
+        buffer[j] += '"'; // Null-terminate the string
+      }
+      i+=j;
+      j = 0;
+      Serial.println(buffer);
+
+      sim.sendData("AT+SHBOD=" + String(buffer) + "," + strlen(buffer)); // sets the body as the json with the json length
+      sim.sendData("AT+SHBOD?");      //checks the body for debugging
+      std::string rv = "NULL";
+  
+      mySerial2.println("AT+SHREQ=" + String(resource) + ",3");       //posts data using the path after domain
+      Serial.println("AT+SHREQ=" + String(resource) + ",3");  
+
+    }
+
+
+    return true;
+}
+
+bool Cellular::sendPostRequest(String jsonPayload, String resource) {
     Serial.println(jsonPayload);
     std::string err;
 

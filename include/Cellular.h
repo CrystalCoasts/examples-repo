@@ -63,12 +63,15 @@ class Cellular  {
 
         //Get and Post functions
         void sendPostRequest();                         //Testing function to send test data to mock server *working*
-        bool sendPostRequest(String jsonPayload);       //Sends json post request to the specified domain *working*
+        bool sendPostRequest(String jsonPayload, String resource);       //Sends json post request to the specified domain *working*
+        bool sendPhotoPost(String jsonPayload, String resource);       //Sends photo post request to the specified domain *working*
         void sendGetRequest(String server, String resource);                          //Get request *working*
         String readResponse();
 
         void setHeader(String header, String type);     //sets the json POST header based on the type
         bool setJsonHeader();                           //sets up a premade header for https post *working*
+        bool setJsonHeaderPhoto();
+
 
         //Function to send AT commands
         std::string sendData(String command);
